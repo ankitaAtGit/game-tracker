@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Score Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .player-list {
+            margin-top: 20px;
+        }
+
+        .player-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-id {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .player-name {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .game-section {
+            grid-column: span 2;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .rounds-container {
+            margin-top: 20px;
+        }
+
+        .round-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .round-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .round-title {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .score-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .score-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .score-input-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .score-input-group input {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .scoreboard {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .scoreboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .scoreboard-table th,
+        .scoreboard-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .scoreboard-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .scoreboard-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .winner {
+            background: #fef3c7 !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid #667eea;
+        }
+
+        .toast-success {
+            border-left-color: #10b981;
+        }
+
+        .toast-error {
+            border-left-color: #ef4444;
+        }
+
+        .toast-warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast-info {
+            border-left-color: #3b82f6;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+
+        .toast-success .toast-icon {
+            background: #10b981;
+        }
+
+        .toast-error .toast-icon {
+            background: #ef4444;
+        }
+
+        .toast-warning .toast-icon {
+            background: #f59e0b;
+        }
+
+        .toast-info .toast-icon {
+            background: #3b82f6;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .toast-message {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .toast-close:hover {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .game-section {
+                grid-column: span 1;
+            }
+
+            .toast-container {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container">
+        <!-- Success Toast -->
+        <div class="toast toast-success">
+            <div class="toast-icon">✓</div>
+            <div class="toast-content">
+                <div class="toast-title">Success!</div>
+                <div class="toast-message">Player added successfully</div>
+            </div>
+            <button class="toast-close">×</button>
+        </div>
+
+        <!-- Error Toast -->
+        <div class="toast toast-error">
+            <div class="toast-icon">✕</div>
+            <div class="toast-content">
+                <div class="toast-title">Error!</div>
+                <div class="toast-message">Failed to delete player</div>
+            </div>
+            <button class="toast-close">×</button>
+        </div>
+
+        <!-- Warning Toast -->
+        <div class="toast toast-warning">
+            <div class="toast-icon">!</div>
+            <div class="toast-content">
+                <div class="toast-title">Warning!</div>
+                <div class="toast-message">Please fill all required fields</div>
+            </div>
+            <button class="toast-close">×</button>
+        </div>
+
+        <!-- Info Toast -->
+        <div class="toast toast-info">
+            <div class="toast-icon">i</div>
+            <div class="toast-content">
+                <div class="toast-title">Info</div>
+                <div class="toast-message">Game created successfully</div>
+            </div>
+            <button class="toast-close">×</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Game Score Tracker</h1>
+            <p>Manage players, track rounds, and calculate winners</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Player Management Section -->
+            <div class="section">
+                <h2>Player Management</h2>
+                
+                <div class="form-group">
+                    <label for="playerId">Player ID</label>
+                    <input type="text" id="playerId" placeholder="Enter player ID">
+                </div>
+
+                <div class="form-group">
+                    <label for="playerName">Player Name</label>
+                    <input type="text" id="playerName" placeholder="Enter player name">
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">Add Player</button>
+                <button class="btn btn-warning" style="width: 100%;">Update Selected Player</button>
+
+                <div class="player-list">
+                    <div class="player-item">
+                        <div class="player-info">
+                            <div class="player-id">ID: P001</div>
+                            <div class="player-name">Alice Johnson</div>
+                        </div>
+                        <div class="player-actions">
+                            <button class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+
+                    <div class="player-item">
+                        <div class="player-info">
+                            <div class="player-id">ID: P002</div>
+                            <div class="player-name">Bob Smith</div>
+                        </div>
+                        <div class="player-actions">
+                            <button class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+
+                    <div class="player-item">
+                        <div class="player-info">
+                            <div class="player-id">ID: P003</div>
+                            <div class="player-name">Carol Williams</div>
+                        </div>
+                        <div class="player-actions">
+                            <button class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Session Section -->
+            <div class="section">
+                <h2>Game Session</h2>
+                
+                <div class="game-controls">
+                    <button class="btn btn-primary">Create New Game</button>
+                    <button class="btn btn-success">Add New Round</button>
+                    <button class="btn btn-warning">Calculate Current Scores</button>
+                    <button class="btn btn-primary">Calculate Final Score</button>
+                </div>
+
+                <div class="rounds-container">
+                    <div class="round-card">
+                        <div class="round-header">
+                            <div class="round-title">Round 1</div>
+                            <button class="btn btn-danger">Remove Round</button>
+                        </div>
+                        <div class="score-inputs">
+                            <div class="score-input-group">
+                                <label>Alice Johnson</label>
+                                <input type="number" placeholder="Score" value="150">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Bob Smith</label>
+                                <input type="number" placeholder="Score" value="120">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Carol Williams</label>
+                                <input type="number" placeholder="Score" value="180">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="round-card">
+                        <div class="round-header">
+                            <div class="round-title">Round 2</div>
+                            <button class="btn btn-danger">Remove Round</button>
+                        </div>
+                        <div class="score-inputs">
+                            <div class="score-input-group">
+                                <label>Alice Johnson</label>
+                                <input type="number" placeholder="Score" value="200">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Bob Smith</label>
+                                <input type="number" placeholder="Score" value="175">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Carol Williams</label>
+                                <input type="number" placeholder="Score" value="160">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="round-card">
+                        <div class="round-header">
+                            <div class="round-title">Round 3</div>
+                            <button class="btn btn-danger">Remove Round</button>
+                        </div>
+                        <div class="score-inputs">
+                            <div class="score-input-group">
+                                <label>Alice Johnson</label>
+                                <input type="number" placeholder="Score">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Bob Smith</label>
+                                <input type="number" placeholder="Score">
+                            </div>
+                            <div class="score-input-group">
+                                <label>Carol Williams</label>
+                                <input type="number" placeholder="Score">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scoreboard Section -->
+            <div class="section game-section">
+                <h2>Current Scoreboard</h2>
+                
+                <div class="scoreboard">
+                    <table class="scoreboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player ID</th>
+                                <th>Player Name</th>
+                                <th>Round 1</th>
+                                <th>Round 2</th>
+                                <th>Round 3</th>
+                                <th>Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="winner">
+                                <td>1st (DRAW)</td>
+                                <td>P001</td>
+                                <td>Alice Johnson</td>
+                                <td>150</td>
+                                <td>200</td>
+                                <td>-</td>
+                                <td><strong>350</strong></td>
+                            </tr>
+                            <tr class="winner">
+                                <td>1st (DRAW)</td>
+                                <td>P003</td>
+                                <td>Carol Williams</td>
+                                <td>180</td>
+                                <td>170</td>
+                                <td>-</td>
+                                <td><strong>350</strong></td>
+                            </tr>
+                            <tr>
+                                <td>3rd</td>
+                                <td>P002</td>
+                                <td>Bob Smith</td>
+                                <td>120</td>
+                                <td>175</td>
+                                <td>-</td>
+                                <td><strong>295</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
